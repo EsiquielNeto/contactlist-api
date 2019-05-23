@@ -2,7 +2,6 @@ package com.viewb.contactlist.domain.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,7 +11,6 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "contact")
-//@Data
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Contact implements Serializable {
 
@@ -33,7 +31,7 @@ public class Contact implements Serializable {
     private String email;
 
     @NotBlank
-    @Size(min = 10, max = 11)
+    @Size(min = 11, max = 11)
     @Column(name = "telephone")
     private String telephone;
 

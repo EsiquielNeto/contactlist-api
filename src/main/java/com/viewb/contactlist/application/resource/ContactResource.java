@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@CrossOrigin("*")
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("contacts")
 public class ContactResource {
@@ -27,8 +27,6 @@ public class ContactResource {
 
     @GetMapping
     public ResponseEntity<Page<Contact>> findAll(ContactFilter contactFilter, Pageable pageable) {
-
-//        Page<Contact> page = contactService.filterContact(contactFilter, pageable);
         return new ResponseEntity<>(contactService.filterContact(contactFilter, pageable), HttpStatus.OK);
     }
 
@@ -42,14 +40,14 @@ public class ContactResource {
         return new ResponseEntity<>(contactService.create(model), HttpStatus.CREATED);
     }
 
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Contact> update(@PathVariable Long id, @Valid @RequestBody Contact model) {
         return new ResponseEntity<>(contactService.update(model, id), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Contact> delete(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
         contactService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
