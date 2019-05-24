@@ -40,23 +40,18 @@ public class ContactResource {
         return new ResponseEntity<>(contactService.findById(id), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Contact> create(@Valid @RequestBody Contact model) {
-        return new ResponseEntity<>(contactService.create(model), HttpStatus.CREATED);
-    }
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Contact> create(@RequestPart(value = "file", required = false) MultipartFile file,
+                                          @Valid @RequestPart(value = "contact") Contact contact) {
 
-    @PostMapping("/photo")
-    public String uploadPhoto(@RequestParam MultipartFile file) throws IOException {
-        OutputStream out = new FileOutputStream(
-                "/home/esiquiel/Imagens/photos/upload--" + file.getOriginalFilename());
-        out.write(file.getBytes());
-        out.close();
-        return "ok";
+        return new ResponseEntity<>(contactService.create(contact, file), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Contact> update(@PathVariable Long id, @Valid @RequestBody Contact model) {
-        return new ResponseEntity<>(contactService.update(model, id), HttpStatus.OK);
+    public ResponseEntity<Contact> update(@PathVariable Long id,
+                                          @RequestPart(value = "file", required = false) MultipartFile file,
+                                          @Valid @RequestPart Contact contact) {
+        return new ResponseEntity<>(contactService.update(contact, id, file), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")

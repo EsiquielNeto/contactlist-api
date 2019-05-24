@@ -6,20 +6,26 @@ import com.viewb.contactlist.repository.ContactRepository;
 import com.viewb.contactlist.repository.filter.ContactFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 public class ContactService {
 
     private final ContactRepository contactRepository;
+    private final UploadPhotoService uploadPhotoService;
 
     @Autowired
-    public ContactService(ContactRepository contactRepository) {
+    public ContactService(ContactRepository contactRepository, UploadPhotoService uploadPhotoService) {
         this.contactRepository = contactRepository;
+        this.uploadPhotoService = uploadPhotoService;
     }
 
     private Class<Contact> getEntityClass(){
@@ -39,12 +45,25 @@ public class ContactService {
         return contactRepository.getOne(id);
     }
 
-    public Contact create(Contact contact) {
+    public Contact create(Contact contact, MultipartFile file) {
+
+        if (file != null) {
+            contact.setPhoto(uploadPhotoService.uploadPhoto(file));
+        }
+
         return contactRepository.save(contact);
     }
 
-    public Contact update(Contact contact, Long id) {
+    public Contact update(Contact contact, Long id, MultipartFile file) {
         Contact contactSave = findById(id);
+
+        if (!StringUtils.isEmpty(contactSave.getPhoto()) || contactSave.getPhoto() != null) {
+            uploadPhotoService.removePhoto(file, contactSave.getPhoto());
+            contact.setPhoto(uploadPhotoService.uploadPhoto(file));
+        } else {
+            contact.setPhoto(uploadPhotoService.uploadPhoto(file));
+        }
+
         BeanUtils.copyProperties(contact, contactSave, "id");
 
         return contactRepository.save(contactSave);
