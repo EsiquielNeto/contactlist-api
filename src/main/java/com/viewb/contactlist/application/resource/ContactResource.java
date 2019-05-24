@@ -40,18 +40,31 @@ public class ContactResource {
         return new ResponseEntity<>(contactService.findById(id), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<Contact> create(@RequestPart(value = "file", required = false) MultipartFile file,
+    @PostMapping(value = "photo", consumes = {"multipart/form-data"})
+    public ResponseEntity<Contact> createPhoto(@RequestPart(value = "file", required = false) MultipartFile file,
                                           @Valid @RequestPart(value = "contact") Contact contact) {
 
         return new ResponseEntity<>(contactService.create(contact, file), HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
+    @PostMapping()
+    public ResponseEntity<Contact> create(@Valid @RequestBody Contact contact) {
+
+        return new ResponseEntity<>(contactService.create(contact), HttpStatus.CREATED);
+    }
+
+
+    @PutMapping(value = "photo/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<Contact> update(@PathVariable Long id,
                                           @RequestPart(value = "file", required = false) MultipartFile file,
                                           @Valid @RequestPart Contact contact) {
         return new ResponseEntity<>(contactService.update(contact, id, file), HttpStatus.OK);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Contact> update(@PathVariable Long id,
+                                          @Valid @RequestBody Contact contact) {
+        return new ResponseEntity<>(contactService.update(contact, id), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")

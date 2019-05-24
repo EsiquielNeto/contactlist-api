@@ -45,6 +45,10 @@ public class ContactService {
         return contactRepository.getOne(id);
     }
 
+    public Contact create(Contact contact) {
+        return contactRepository.save(contact);
+    }
+
     public Contact create(Contact contact, MultipartFile file) {
 
         if (file != null) {
@@ -52,6 +56,14 @@ public class ContactService {
         }
 
         return contactRepository.save(contact);
+    }
+
+    public Contact update(Contact contact, Long id) {
+        Contact contactSave = findById(id);
+
+        BeanUtils.copyProperties(contact, contactSave, "id");
+
+        return contactRepository.save(contactSave);
     }
 
     public Contact update(Contact contact, Long id, MultipartFile file) {
