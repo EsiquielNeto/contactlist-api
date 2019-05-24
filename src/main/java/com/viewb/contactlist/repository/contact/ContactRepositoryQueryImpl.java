@@ -23,8 +23,27 @@ public class ContactRepositoryQueryImpl implements ContactRepositoryQuery{
     @PersistenceContext
     private EntityManager manager;
 
+
     @Override
-    public Page<Contact> filterContact(ContactFilter contactFilter, Pageable pageable) {
+    public List<Contact> filterContact(ContactFilter contactFilter) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Contact> criteria = builder.createQuery(Contact.class);
+        Root<Contact> root = criteria.from(Contact.class);
+
+        Predicate[] predicates = restrictions(contactFilter, builder, root);
+        criteria.where(predicates);
+
+        TypedQuery<Contact> query = manager.createQuery(criteria);
+
+        return query.getResultList();
+    }
+
+
+    /**
+     * Este método de paginação não foi utilizado, porque ele quebra o sorting do tuebo table...
+     * */
+/*    @Override
+    public List<Contact> filterContact(ContactFilter contactFilter, Pageable pageable) {
         CriteriaBuilder builder = manager.getCriteriaBuilder();
         CriteriaQuery<Contact> criteria = builder.createQuery(Contact.class);
         Root<Contact> root = criteria.from(Contact.class);
@@ -36,7 +55,8 @@ public class ContactRepositoryQueryImpl implements ContactRepositoryQuery{
         paginationConfig(query, pageable);
 
         return new PageImpl<>(query.getResultList(), pageable, total(contactFilter));
-    }
+        return query.getResultList();
+      }*/
 
     private Predicate[] restrictions(ContactFilter contactFilter, CriteriaBuilder builder, Root<Contact> root) {
         List<Predicate> predicates = new ArrayList<>();

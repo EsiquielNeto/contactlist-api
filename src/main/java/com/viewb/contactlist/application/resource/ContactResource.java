@@ -10,8 +10,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 @CrossOrigin(value = "*")
 @RestController
@@ -26,8 +31,8 @@ public class ContactResource {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Contact>> findAll(ContactFilter contactFilter, Pageable pageable) {
-        return new ResponseEntity<>(contactService.filterContact(contactFilter, pageable), HttpStatus.OK);
+    public ResponseEntity<List<Contact>> findAll(ContactFilter contactFilter) {
+        return new ResponseEntity<>(contactService.filterContact(contactFilter), HttpStatus.OK);
     }
 
     @GetMapping("{id}")
@@ -38,6 +43,15 @@ public class ContactResource {
     @PostMapping
     public ResponseEntity<Contact> create(@Valid @RequestBody Contact model) {
         return new ResponseEntity<>(contactService.create(model), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/photo")
+    public String uploadPhoto(@RequestParam MultipartFile file) throws IOException {
+        OutputStream out = new FileOutputStream(
+                "/home/esiquiel/Imagens/photos/upload--" + file.getOriginalFilename());
+        out.write(file.getBytes());
+        out.close();
+        return "ok";
     }
 
     @PutMapping("{id}")

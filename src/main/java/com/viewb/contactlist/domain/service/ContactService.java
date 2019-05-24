@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ContactService {
 
@@ -28,8 +30,8 @@ public class ContactService {
         return this.getEntityClass().getSimpleName().substring(0, 1).toLowerCase() + this.getEntityClass().getSimpleName().substring(1);
     }
 
-    public Page<Contact> filterContact(ContactFilter contactFilter, Pageable pageable) {
-        return contactRepository.filterContact(contactFilter, pageable);
+    public List<Contact> filterContact(ContactFilter contactFilter) {
+        return contactRepository.filterContact(contactFilter);
     }
 
     public Contact findById(Long id) {
